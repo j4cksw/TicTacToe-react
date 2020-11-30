@@ -1,4 +1,3 @@
-import { prettyDOM } from '@testing-library/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
@@ -50,6 +49,63 @@ class Board extends React.Component {
     }
 }
 
+class HistoryItem extends React.Component {
+
+    render() {
+        return (
+            <li>
+                <button
+                    className={this.props.styles} 
+                    onClick={
+                        () => this.props.onClick()}
+                >
+                    {this.props.desc}
+                </button>
+            </li>
+        );
+    }
+}
+
+class HistoryList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedStyles: Array(this.props.history.length).fill("deselected")
+        };
+    }
+
+    selectedOn(index) {
+        let selectedStyles = this.state.selectedStyles.map(()=>"deselected");
+        selectedStyles[index] = "selected";
+        this.setState({
+            selectedStyles: selectedStyles
+        });
+    }
+
+    render() {
+        const history = this.props.history;
+        const moves = history.map((step, move) => {
+            const desc = move ? 'Go to turn #' + move + ' (' + step.state + ' at ' + step.coordinates.x + ' ' + step.coordinates.y + ')': 'Go to start';
+            return(
+                <HistoryItem
+                    key={move}
+                    move={move} 
+                    desc={desc}
+                    styles={this.state.selectedStyles[move]} 
+                    onClick={()=>{
+                        this.selectedOn(move);
+                        this.props.onClick(move);
+                    }}
+                />
+            );
+        })
+
+        return (
+            <ol>{moves}</ol>
+        );
+    }
+}
+
 class Game extends React.Component {
 
     constructor(props) {
@@ -60,7 +116,8 @@ class Game extends React.Component {
                 squares: Array(9).fill(null),
             }],
             stepNumber: 0,
-            xIsNext: true
+            xIsNext: true,
+            historyItemStyles: ["selected"]
         };
     }
 
@@ -102,15 +159,19 @@ class Game extends React.Component {
             status = "Next Player. " + (this.state.xIsNext ? "X": "O");
         }
 
-        const moves = history.map((step, move) => {
-            console.log(move)
-            const desc = move ? 'Go to turn #' + move + ' (' + step.state + ' at ' + step.coordinates.x + ' ' + step.coordinates.y + ')': 'Go to start';
-            return(
-                <li key={move}>
-                    <button onClick={()=>this.jumpTo(move)}>{desc}</button>
-                </li>
-            );
-        })
+        // const moves = history.map((step, move) => {
+        //     const desc = move ? 'Go to turn #' + move + ' (' + step.state + ' at ' + step.coordinates.x + ' ' + step.coordinates.y + ')': 'Go to start';
+
+        //     return(
+        //         <HistoryItem
+        //             key={move}
+        //             move={move} 
+        //             desc={desc}
+        //             styles={step.historyItemStyles[move]} 
+        //             onClick={()=>this.jumpTo(move)}
+        //         />
+        //     );
+        // })
 
         return(
             
@@ -123,7 +184,10 @@ class Game extends React.Component {
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
-                    <ol>{moves}</ol>
+                    <HistoryList
+                        history={history}
+                        onClick={(i)=>this.jumpTo(i)}
+                    />
                 </div>
             </div>
         )

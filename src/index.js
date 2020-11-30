@@ -21,29 +21,47 @@ class Board extends React.Component {
 
     renderSquare(i, coordinates) {
         return <Square 
+            key={"sq" + i}
             value={this.props.squares[i]} 
             onClick={()=>{this.props.onClick(i, coordinates)}}
         />;
     }
 
     render() {
+
+        const coordinates = [
+            [ 
+                Coordinates(0, 0),
+                Coordinates(0, 1),
+                Coordinates(0, 2), 
+            ],
+            [
+                Coordinates(1, 0),
+                Coordinates(1, 1),
+                Coordinates(1, 2),
+            ],
+            [
+                Coordinates(2, 0),
+                Coordinates(2, 1),
+                Coordinates(2, 2),
+            ],
+        ]
+
+        const rows = coordinates.map((row, i)=> {
+            const columns = row.map((column, j)=>{
+                return this.renderSquare(j + (3*i), column)
+            });
+
+            return (
+                <div key={"row"+i} className="board-row">
+                    { columns }
+                </div>
+            );
+        })
+
         return (
             <div>
-                <div className="board-row">
-                    {this.renderSquare(0, Coordinates(0, 0))}
-                    {this.renderSquare(1, Coordinates(0, 1))}
-                    {this.renderSquare(2, Coordinates(0, 2))}
-                </div>
-                <div className="board-row">
-                    {this.renderSquare(3, Coordinates(1, 0))}
-                    {this.renderSquare(4, Coordinates(1, 1))}
-                    {this.renderSquare(5, Coordinates(1, 2))}
-                </div>
-                <div className="board-row">
-                    {this.renderSquare(6, Coordinates(2, 0))}
-                    {this.renderSquare(7, Coordinates(2, 1))}
-                    {this.renderSquare(8, Coordinates(2, 2))}
-                </div>
+                {rows}
             </div>
         );
     }

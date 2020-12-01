@@ -88,7 +88,8 @@ class HistoryList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedStyles: Array(this.props.history.length).fill("deselected")
+            selectedStyles: Array(this.props.history.length).fill("deselected"),
+            buttonText: "Old to new"
         };
     }
 
@@ -98,6 +99,12 @@ class HistoryList extends React.Component {
         this.setState({
             selectedStyles: selectedStyles
         });
+    }
+
+    swapOrder() {
+        this.setState({
+            buttonText: "New to old"
+        })
     }
 
     render() {
@@ -119,7 +126,12 @@ class HistoryList extends React.Component {
         })
 
         return (
-            <ol>{moves}</ol>
+            <div>
+                <ol>{moves}</ol>
+                <button onClick={()=>this.swapOrder()}>
+                    {this.state.buttonText}
+                </button>
+            </div>
         );
     }
 }
@@ -176,20 +188,6 @@ class Game extends React.Component {
         } else {
             status = "Next Player. " + (this.state.xIsNext ? "X": "O");
         }
-
-        // const moves = history.map((step, move) => {
-        //     const desc = move ? 'Go to turn #' + move + ' (' + step.state + ' at ' + step.coordinates.x + ' ' + step.coordinates.y + ')': 'Go to start';
-
-        //     return(
-        //         <HistoryItem
-        //             key={move}
-        //             move={move} 
-        //             desc={desc}
-        //             styles={step.historyItemStyles[move]} 
-        //             onClick={()=>this.jumpTo(move)}
-        //         />
-        //     );
-        // })
 
         return(
             
